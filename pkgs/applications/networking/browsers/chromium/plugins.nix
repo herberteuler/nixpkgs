@@ -1,9 +1,9 @@
 { stdenv
 , jshon
-, fetchzip
+, fetchurl
 , enablePepperFlash ? false
 , enableWideVine ? false
-
+, unzip
 , upstream-info
 }:
 
@@ -96,12 +96,25 @@ let
     name = "flashplayer-ppapi-${version}";
     version = "27.0.0.159";
 
-    src = fetchzip {
-      url = "https://fpdownload.adobe.com/pub/flashplayer/pdc/"
-          + "${version}/flash_player_ppapi_linux.x86_64.tar.gz";
-      sha256 = "00nbn8nv6irsak05cwlx9x8q0n91kbjxnkdg4c66ilx2gq5wrz05";
-      stripRoot = false;
+    arch =
+      if stdenv.system == "x86_64-linux" then
+        "x86_64"
+      else if stdenv.system == "i686-linux" then
+        "i386"
+      else
+        throw "Flash Player is not supported on this platform";
+
+    src = fetchurl {
+      url = "https://fpdownload.macromedia.com/pub/flashplayer/installers/archive/fp_${version}_archive.zip";
+      sha256 = "079623a107f4c05ab19f3bcd73c2eb9ee832c14223ef7e807a7cb5fa30b315ac";
     };
+
+    postUnpack = ''
+      dir=$(ls | grep -v env-vars | grep -v debug)
+      file=$(echo $dir/flashplayer*_linuxpep.${arch}.tar.gz)
+      echo unpacking $file
+      tar xf $file
+    '';
 
     patchPhase = ''
       chmod +x libpepflashplayer.so
@@ -130,6 +143,10 @@ let
     '';
 
     dontStrip = true;
+    dontPatchElf = true;
+
+    nativeBuildInputs = [ unzip ];
+    sourceRoot = ".";
   };
 
 in {

@@ -76,22 +76,8 @@ stdenv.mkDerivation rec {
   version = "27.0.0.159";
 
   src = fetchurl {
-    url =
-      if debug then
-        "https://fpdownload.macromedia.com/pub/flashplayer/updaters/27/flash_player_npapi_linux_debug.${arch}.tar.gz"
-      else
-        "https://fpdownload.adobe.com/get/flashplayer/pdc/${version}/flash_player_npapi_linux.${arch}.tar.gz";
-    sha256 =
-      if debug then
-        if arch == "x86_64" then
-          "0fgz1aszihjrxpzyrs29wr11imfgnyfb2ca9c1i3n6k9wpwv926p"
-        else
-          "052dx764b6cfbc7mkxckcr3hbwd5b7l98cp3jqmddkllv4w4h6dp"
-      else
-        if arch == "x86_64" then
-          "1p136zn059hp59j0llk7rfsybjx51qjz2h5sd4xl8zqbs0szynid"
-        else
-          "06l8rjnhpqip6ikc97rf3zsgmy381q4wgzyl9rsjwlvhpgqdlhrl";
+    url = "https://fpdownload.macromedia.com/pub/flashplayer/installers/archive/fp_${version}_archive.zip";
+    sha256 = "079623a107f4c05ab19f3bcd73c2eb9ee832c14223ef7e807a7cb5fa30b315ac";
   };
 
   nativeBuildInputs = [ unzip ];
@@ -102,6 +88,18 @@ stdenv.mkDerivation rec {
   dontPatchELF = true;
 
   preferLocalBuild = true;
+
+  postUnpack = if debug then ''
+    dir=$(ls | grep -v env-vars | grep debug)
+    file=$dir/flashplayer*_linux_debug.${arch}.tar.gz
+    echo unpacking $file
+    tar xf $file
+  '' else ''
+    dir=$(ls | grep -v env-vars | grep -v debug)
+    file=$dir/flashplayer*_linux.${arch}.tar.gz
+    echo unpacking $file
+    tar xf $file
+  '';
 
   installPhase = ''
     mkdir -p $out/lib/mozilla/plugins
