@@ -1,0 +1,12 @@
+diff -Naru /nix/store/6djbrnvajq1zavalvv17aq33j87mlpgn-seastar-11ad0b1/configure.py seastar-11ad0b1/configure.py
+--- /nix/store/6djbrnvajq1zavalvv17aq33j87mlpgn-seastar-11ad0b1/configure.py	1970-01-01 08:00:01.000000000 +0800
++++ seastar-11ad0b1/configure.py	2017-11-10 08:23:40.898156963 +0800
+@@ -782,7 +782,7 @@
+             command = ragel -G2 -o $out $in && sed -i -e '1h;2,$$H;$$!d;g' -re 's/static const char _nfa[^;]*;//g' $out
+             description = RAGEL $out
+         rule gen
+-            command = /bin/echo -e $text > $out
++            command = echo -e $text > $out
+             description = GEN $out
+         rule swagger
+             command = json/json2code.py -f $in -o $out

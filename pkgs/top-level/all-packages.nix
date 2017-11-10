@@ -19823,4 +19823,8 @@ with pkgs;
   dnstracer = callPackage ../tools/networking/dnstracer {
     inherit (darwin) libresolv;
   };
+
+  seastar = callPackage ../development/libraries/seastar {
+    inherit linuxPackages;
+  };
 }
