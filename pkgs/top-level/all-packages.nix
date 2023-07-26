@@ -38818,6 +38818,7 @@ with pkgs;
 
   mathematica-cuda = callPackage ../applications/science/math/mathematica {
     cudaSupport = true;
+    cudaPackages = cudaPackages_12;
   };
 
   mathematica9 = callPackage ../applications/science/math/mathematica {

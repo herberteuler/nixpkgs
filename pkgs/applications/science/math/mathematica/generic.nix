@@ -21,6 +21,7 @@
 , fontconfig
 , freetype
 , gcc-unwrapped
+, gdb
 , glib
 , gmpxx
 , keyutils
@@ -53,7 +54,8 @@
 let cudaEnv = symlinkJoin {
       name = "mathematica-cuda-env";
       paths = with cudaPackages; [
-        cuda_cudart cuda_nvcc libcublas libcufft libcurand libcusparse
+        cuda_cudart cuda_nvcc cuda_nvrtc
+        libcublas libcufft libcurand libcusparse libnvjitlink
       ];
       postBuild = ''
         ln -s ${addOpenGLRunpath.driverLink}/lib/libcuda.so $out/lib
@@ -76,6 +78,7 @@ in stdenv.mkDerivation {
     flite
     fontconfig
     freetype
+    gdb
     glib
     gmpxx
     keyutils.lib
@@ -120,7 +123,7 @@ in stdenv.mkDerivation {
 
   wrapProgramFlags = [
     "--prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ gcc-unwrapped.lib zlib ]}"
-    "--prefix PATH : ${lib.makeBinPath [ stdenv.cc ]}"
+    "--prefix PATH : ${lib.makeBinPath [ stdenv.cc gdb ]}"
     # Fix libQt errors - #96490
     "--set USE_WOLFRAM_LD_LIBRARY_PATH 1"
     # Fix xkeyboard config path for Qt
