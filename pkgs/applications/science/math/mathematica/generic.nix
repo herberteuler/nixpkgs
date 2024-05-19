@@ -53,12 +53,12 @@
 let cudaEnv = symlinkJoin {
       name = "mathematica-cuda-env";
       paths = with cudaPackages; [
-        cuda_cudart cuda_nvcc libcublas libcufft libcurand libcusparse
+        cuda_cudart cuda_nvcc cuda_nvrtc
+        libcublas libcufft libcurand libcusolver libcusparse
       ];
       postBuild = ''
-        if [ ! -e $out/lib/libcuda.so ]; then
-            ln -s ${addOpenGLRunpath.driverLink}/lib/libcuda.so $out/lib
-        fi
+        rm -f $out/lib/libcuda.so*
+        ln -s ${addOpenGLRunpath.driverLink}/lib/libcuda.so $out/lib
         ln -s lib $out/lib64
       '';
     };
